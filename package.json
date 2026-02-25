@@ -1,0 +1,19 @@
+{
+  "name": "railway-health-webhook",
+  "version": "1.0.0",
+  "description": "Railway webhook server for Apple Watch health data",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "dependencies": {
+    "express": "^4.18.2",
+    "helmet": "^7.0.0",
+    "cors": "^2.8.5",
+    "express-rate-limit": "^6.7.0",
+    "axios": "^1.4.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}
