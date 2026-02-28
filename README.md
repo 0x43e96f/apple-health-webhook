@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="logo.png" width="180" alt="Apple Health Webhook Logo"/>
+</p>
+
 # ⌚ Apple Health Webhook
 
 > Vibe-coded with Claude — because manually checking health stats is so 2024.

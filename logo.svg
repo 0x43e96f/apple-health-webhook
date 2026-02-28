@@ -1,0 +1,62 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#1a1a2e"/>
+      <stop offset="100%" style="stop-color:#16213e"/>
+    </linearGradient>
+    <linearGradient id="pulse" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#00ff88"/>
+      <stop offset="100%" style="stop-color:#00d4ff"/>
+    </linearGradient>
+    <linearGradient id="heart" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#ff6b6b"/>
+      <stop offset="100%" style="stop-color:#ee5a24"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Background circle -->
+  <circle cx="256" cy="256" r="240" fill="url(#bg)" stroke="#2d3436" stroke-width="4"/>
+
+  <!-- Watch body (rounded rectangle) -->
+  <rect x="156" y="96" width="200" height="260" rx="40" ry="40" fill="#2d3436" stroke="#636e72" stroke-width="3"/>
+
+  <!-- Watch screen -->
+  <rect x="176" y="120" width="160" height="210" rx="20" ry="20" fill="#0a0a1a"/>
+
+  <!-- Watch crown -->
+  <rect x="356" y="196" width="16" height="48" rx="6" ry="6" fill="#636e72"/>
+
+  <!-- Heart icon on screen -->
+  <path d="M 230 175 C 230 160, 250 150, 256 165 C 262 150, 282 160, 282 175 C 282 195, 256 215, 256 215 C 256 215, 230 195, 230 175 Z" fill="url(#heart)"/>
+
+  <!-- Heartbeat line on screen -->
+  <polyline points="185,260 210,260 220,260 230,240 240,280 250,250 260,270 270,260 280,260 300,260 320,260"
+    fill="none" stroke="url(#pulse)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+
+  <!-- BPM text -->
+  <text x="256" y="300" text-anchor="middle" fill="#00ff88" font-family="SF Mono, Menlo, monospace" font-size="18" font-weight="bold">72 BPM</text>
+
+  <!-- Data flow arrows (bottom) -->
+  <g opacity="0.8">
+    <!-- Arrow 1 -->
+    <line x1="200" y1="380" x2="200" y2="420" stroke="#00d4ff" stroke-width="2" stroke-dasharray="4,4"/>
+    <polygon points="195,420 200,430 205,420" fill="#00d4ff"/>
+
+    <!-- Arrow 2 -->
+    <line x1="256" y1="380" x2="256" y2="420" stroke="#00ff88" stroke-width="2" stroke-dasharray="4,4"/>
+    <polygon points="251,420 256,430 261,420" fill="#00ff88"/>
+
+    <!-- Arrow 3 -->
+    <line x1="312" y1="380" x2="312" y2="420" stroke="#00d4ff" stroke-width="2" stroke-dasharray="4,4"/>
+    <polygon points="307,420 312,430 317,420" fill="#00d4ff"/>
+  </g>
+
+  <!-- Webhook text -->
+  <text x="256" y="460" text-anchor="middle" fill="#b2bec3" font-family="SF Pro, -apple-system, sans-serif" font-size="16" letter-spacing="3">WEBHOOK</text>
+
+  <!-- Watch band top -->
+  <rect x="196" y="56" width="120" height="44" rx="8" ry="8" fill="#2d3436" opacity="0.6"/>
+
+  <!-- Watch band bottom -->
+  <rect x="196" y="352" width="120" height="44" rx="8" ry="8" fill="#2d3436" opacity="0.6"/>
+</svg>
