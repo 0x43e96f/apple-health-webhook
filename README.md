@@ -1,204 +1,86 @@
-# Railway Health Webhook Server
+# ⌚ Apple Health Webhook
 
-A secure webhook server deployed on Railway that forwards Apple Watch health data to OpenClaw.
+> Vibe-coded with Claude — because manually checking health stats is so 2024.
+
+A lightweight webhook relay that syncs your Apple Watch health data (heart rate, sleep, steps) to [OpenClaw](https://github.com/openclaw/openclaw) via iOS Shortcuts. Deployed on Railway, secured with API keys and rate limiting.
+
+## How It Works
+
+```
+Apple Watch → iOS Shortcuts → Railway Webhook → OpenClaw → Morning Health Report
+```
+
+Your watch collects the data. A Shortcut fires it off. This server catches it, validates it, and forwards it to your AI agent for daily health summaries. Zero manual input.
 
 ## Features
 
-- ✅ API key authentication for security
-- ✅ Rate limiting to prevent abuse
-- ✅ Request logging for debugging
-- ✅ Graceful error handling
-- ✅ Health check endpoint
-- ✅ Automatic forwarding to OpenClaw Health Data Receiver
+- **API Key Auth** — no unauthorized data gets through
+- **Rate Limiting** — 100 req/15min per IP
+- **Request Logging** — full audit trail for debugging
+- **Auto-Forward** — receives health payload, immediately relays to OpenClaw
+- **Health Check** — `GET /` for uptime monitoring
+- **One-Click Deploy** — Railway-ready with `railway.json`
 
-## Architecture
-
-```
-iOS Shortcuts → Railway Webhook → OpenClaw Health Data Receiver → Morning Report
-```
-
-## Environment Variables
-
-Create a `.env` file in the project root:
-
-```env
-API_KEY=your-secure-api-key-here
-OPENCLAW_WEBHOOK_URL=http://localhost:8080/webhook/health-data
-PORT=8080
-```
-
-### API Key Generation
-
-Generate a secure API key:
+## Quick Start
 
 ```bash
-# Linux/Mac
-openssl rand -base64 32
-
-# Or using Node.js
-node -e "console.log(require('crypto').randomBytes(32).toString('base64'))"
-```
-
-## Webhook Endpoint
-
-### POST /webhook/health
-
-Headers:
-- `X-API-Key`: Your API key (or use `?apiKey=` query parameter)
-
-Request body:
-
-```json
-{
-  "data": {
-    "heartRate": 68,
-    "sleepDuration": 7.5,
-    "steps": 4500,
-    "timestamp": "2024-02-24T08:00:00Z"
-  },
-  "trigger": "morning-report"
-}
-```
-
-Response:
-
-```json
-{
-  "status": "success",
-  "message": "Health data received and forwarded",
-  "forwardedAt": "2024-02-24T08:00:00Z",
-  "target": "http://localhost:8080/webhook/health-data",
-  "openClawResponse": {
-    "status": "success",
-    "message": "Health data received and saved"
-  }
-}
-```
-
-## Local Testing
-
-1. Install dependencies:
-```bash
+# Clone & install
+git clone https://github.com/0x43e96f/apple-health-webhook.git
+cd apple-health-webhook
 npm install
-```
 
-2. Create `.env` file:
-```bash
+# Configure
 cp .env.example .env
-# Edit .env with your configuration
-```
+# Edit .env with your API_KEY and OPENCLAW_WEBHOOK_URL
 
-3. Start server:
-```bash
+# Run
 npm start
 ```
 
-4. Test webhook:
+## API
+
+### `POST /webhook/health`
+
+Send health data with an API key:
+
 ```bash
 curl -X POST http://localhost:8080/webhook/health \
   -H "Content-Type: application/json" \
-  -H "X-API-Key: your-api-key" \
-  -d '{
-    "data": {
-      "heartRate": 68,
-      "sleepDuration": 7.5,
-      "steps": 4500,
-      "timestamp": "'$(date -u +"%Y-%m-%dT%H:%M:%SZ")'"
-    },
-    "trigger": "morning-report"
-  }'
+  -H "X-API-Key: your-key" \
+  -d '{"data": {"heartRate": 68, "sleepDuration": 7.5, "steps": 4500}, "trigger": "morning-report"}'
 ```
 
-## Deployment to Railway
+### `GET /` — Health check
+### `GET /test` — Config status
 
-### Option 1: One-line deployment (requires GitHub repo)
+## Deploy to Railway
 
-```bash
-# First, push your code to GitHub
-git init
-git add .
-git commit -m "Initial commit"
-git remote add origin <your-github-repo-url>
-git push -u origin main
+1. Push to GitHub
+2. Connect repo on [railway.app](https://railway.app)
+3. Set env vars: `API_KEY`, `OPENCLAW_WEBHOOK_URL`
+4. Done. Railway auto-detects Node.js.
 
-# Then deploy via Railway CLI
-railway up
-```
+Or use the deploy script: `./deploy-to-railway.sh`
 
-### Option 2: Deploy via Railway Dashboard
+## iOS Shortcut Setup
 
-1. Go to https://railway.app/new
-2. Click "Deploy from GitHub repo"
-3. Select this repository
-4. Railway will auto-detect the Node.js project
-5. Set environment variables in Railway dashboard:
-   - `API_KEY`: Your secure API key
-   - `OPENCLAW_WEBHOOK_URL`: Your OpenClaw Gateway URL (e.g., `https://your-domain.com/webhook/health-data`)
+1. Create a new Shortcut
+2. Add "Get Health Data" actions (heart rate, sleep, steps)
+3. Add "Get Contents of URL" → point to your Railway URL
+4. Set `X-API-Key` header
+5. Schedule via Automations (e.g., every morning at 8am)
 
-### Option 3: One-click deployment script
+## Tech Stack
 
-```bash
-./deploy-to-railway.sh
-```
+- **Runtime**: Node.js 18+
+- **Framework**: Express
+- **Security**: Helmet + CORS + rate-limit
+- **HTTP Client**: Axios
+- **Deploy**: Railway
 
-## iOS Shortcuts Configuration
+## Built With
 
-In your iOS Shortcuts app:
-
-1. Create a new shortcut
-2. Add "Get Health Data" action (for heart rate, sleep, steps)
-3. Add "Get Date" action for timestamp
-4. Add "Get Contents of URL" action:
-   - URL: `https://your-railway-project.railway.app/webhook/health`
-   - Method: POST
-   - Headers: Add `X-API-Key` with your API key
-   - Request Body: JSON
-   ```json
-   {
-     "data": {
-       "heartRate": {HeartRate},
-       "sleepDuration": {SleepDuration},
-       "steps": {Steps},
-       "timestamp": {Timestamp}
-     },
-     "trigger": "morning-report"
-   }
-   ```
-
-## Monitoring
-
-### Check service health:
-```bash
-curl https://your-railway-project.railway.app/
-```
-
-### Check configuration:
-```bash
-curl https://your-railway-project.railway.app/test
-```
-
-## Troubleshooting
-
-### API key error
-- Ensure `X-API-Key` header is set correctly
-- Check that API key matches Railway environment variable
-
-### OpenClaw connection error
-- Verify `OPENCLAW_WEBHOOK_URL` is correct
-- Check that OpenClaw Gateway is running
-- Review Railway logs for connection errors
-
-### Rate limiting
-- Default: 100 requests per 15 minutes per IP
-- Adjust in `index.js` if needed
-
-## Security Notes
-
-- Always use HTTPS in production
-- Keep API keys secret
-- Don't commit `.env` file
-- Regularly rotate API keys
-- Monitor Railway logs for suspicious activity
+This entire project was vibe-coded with [Claude](https://claude.ai) — from architecture decisions to the actual code. The human provided the idea and the Apple Watch; Claude did the rest.
 
 ## License
 
